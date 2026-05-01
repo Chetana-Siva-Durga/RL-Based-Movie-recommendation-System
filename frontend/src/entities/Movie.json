@@ -1,0 +1,105 @@
+{
+  "name": "Movie",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Movie title"
+    },
+    "genre": {
+      "type": "string",
+      "enum": [
+        "Action",
+        "Drama",
+        "Comedy",
+        "Romance",
+        "Thriller",
+        "Horror",
+        "Fantasy",
+        "Sci-Fi",
+        "Family",
+        "Historical"
+      ],
+      "description": "Primary genre"
+    },
+    "primary_mood": {
+      "type": "string",
+      "enum": [
+        "Happy",
+        "Sad",
+        "Thrilling",
+        "Romantic",
+        "Inspiring",
+        "Intense",
+        "Fun",
+        "Emotional",
+        "Adventurous",
+        "Dark"
+      ],
+      "description": "Primary emotional tone"
+    },
+    "secondary_mood": {
+      "type": "string",
+      "enum": [
+        "Happy",
+        "Sad",
+        "Thrilling",
+        "Romantic",
+        "Inspiring",
+        "Intense",
+        "Fun",
+        "Emotional",
+        "Adventurous",
+        "Dark"
+      ],
+      "description": "Secondary emotional tone"
+    },
+    "year": {
+      "type": "number",
+      "description": "Release year"
+    },
+    "director": {
+      "type": "string",
+      "description": "Director name"
+    },
+    "lead_actor": {
+      "type": "string",
+      "description": "Lead actor name"
+    },
+    "popularity": {
+      "type": "number",
+      "description": "Popularity score 1-10"
+    },
+    "imdb_rating": {
+      "type": "number",
+      "description": "IMDB rating"
+    },
+    "keywords": {
+      "type": "string",
+      "description": "Comma-separated emotion/content tags"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief movie summary"
+    },
+    "poster_url": {
+      "type": "string",
+      "description": "URL to movie poster image"
+    },
+    "reward_score": {
+      "type": "number",
+      "description": "Cumulative reward from user feedback",
+      "default": 0
+    },
+    "recommend_count": {
+      "type": "number",
+      "description": "Number of times recommended",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "genre",
+    "primary_mood"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+    "total_episodes": 3000,
+    "final_accuracy_eps": 0.8833333333333333,
+    "final_accuracy_ts": 0.9566666666666667,
+    "final_regret_eps": 3267.4875651435796,
+    "final_regret_ts": 719.0863849630474,
+    "total_reward_eps": 15998.512434856437,
+    "total_reward_ts": 18546.91361503699
+}

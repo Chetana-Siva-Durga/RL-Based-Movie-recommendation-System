@@ -1,0 +1,39 @@
+{
+  "name": "UserFeedback",
+  "type": "object",
+  "properties": {
+    "movie_id": {
+      "type": "string",
+      "description": "ID of the recommended movie"
+    },
+    "movie_title": {
+      "type": "string",
+      "description": "Title of the recommended movie"
+    },
+    "feedback": {
+      "type": "string",
+      "enum": [
+        "like",
+        "dislike"
+      ],
+      "description": "User feedback"
+    },
+    "reward": {
+      "type": "number",
+      "description": "+1 for like, -1 for dislike"
+    },
+    "mood_context": {
+      "type": "string",
+      "description": "The mood that triggered this recommendation"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "The explanation shown to the user"
+    }
+  },
+  "required": [
+    "movie_id",
+    "feedback",
+    "reward"
+  ]
+}

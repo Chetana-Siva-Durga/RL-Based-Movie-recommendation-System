@@ -1,0 +1,42 @@
+{
+  "name": "RecommendationLog",
+  "type": "object",
+  "properties": {
+    "movie_id": {
+      "type": "string",
+      "description": "Recommended movie ID"
+    },
+    "movie_title": {
+      "type": "string",
+      "description": "Recommended movie title"
+    },
+    "input_type": {
+      "type": "string",
+      "enum": [
+        "mood",
+        "movie"
+      ],
+      "description": "How the user triggered the recommendation"
+    },
+    "input_value": {
+      "type": "string",
+      "description": "The mood or movie name entered"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Why this was recommended"
+    },
+    "epsilon_used": {
+      "type": "number",
+      "description": "Epsilon value at time of recommendation"
+    },
+    "was_exploration": {
+      "type": "boolean",
+      "description": "Whether this was an exploration action"
+    }
+  },
+  "required": [
+    "movie_id",
+    "input_type"
+  ]
+}

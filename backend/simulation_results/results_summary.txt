@@ -1,0 +1,11 @@
+==================================================
+        RESEARCH SIMULATION FINAL RESULTS
+==================================================
+Total Episodes     : 3000
+Epsilon-Greedy Acc : 88.33%
+Thompson Samp. Acc : 95.67%
+Final Regret (EPS) : 3267.49
+Final Regret (TS)  : 719.09
+Total Reward (EPS) : 15998.51
+Total Reward (TS)  : 18546.91
+==================================================
