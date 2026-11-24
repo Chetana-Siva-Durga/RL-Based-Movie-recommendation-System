@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/$/, '');
 
 /**
  * Enhanced fetch wrapper with basic error handling to prevent "hanging" loaders.
@@ -17,7 +17,40 @@ async function fetchJSON(url, options = {}) {
   }
 }
 
+async function fetchAuthJSON(url, options = {}) {
+  const response = await fetch(url, options);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || `Request failed: ${response.status}`);
+  return data;
+}
+
 export const api = {
+  auth: {
+    login: (email, password) =>
+      fetchAuthJSON(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }),
+    forgotPassword: (email) =>
+      fetchAuthJSON(`${BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }),
+    verifyOTP: (email, otp) =>
+      fetchAuthJSON(`${BASE_URL}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      }),
+    resetPassword: (email, otp, new_password) =>
+      fetchAuthJSON(`${BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, new_password }),
+      }),
+  },
   movies: {
     list: ({ page = 1, limit = 20, search = '', genre = 'all', mood = 'all' } = {}) => {
       const params = new URLSearchParams({ page, limit });

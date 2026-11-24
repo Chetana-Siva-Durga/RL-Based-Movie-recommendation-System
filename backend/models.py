@@ -1,6 +1,9 @@
 from sqlalchemy import Column, String, Float, Boolean, Integer, DateTime
 from sqlalchemy.sql import func
-from database import Base
+try:
+    from .database import Base
+except ImportError:
+    from database import Base
 import uuid
 
 def gen_id():

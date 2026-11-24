@@ -2,8 +2,12 @@ import math
 import uuid
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Movie
+try:
+    from ..database import get_db
+    from ..models import Movie
+except ImportError:
+    from database import get_db
+    from models import Movie
 from pydantic import BaseModel
 from typing import Optional
 

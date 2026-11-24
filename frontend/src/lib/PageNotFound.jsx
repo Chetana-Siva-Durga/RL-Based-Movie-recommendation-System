@@ -16,7 +16,7 @@ export default function PageNotFound() {
         // Replace this block with your real auth API or local data
         const user = { name: 'Demo User', role: 'admin' };
         setAuthData({ isAuthenticated: true, user });
-      } catch (error) {
+      } catch (_error) {
         setAuthData({ isAuthenticated: false, user: null });
       } finally {
         setIsFetched(true);

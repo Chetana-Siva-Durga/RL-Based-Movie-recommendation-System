@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Movie
+try:
+    from ..database import get_db
+    from ..models import Movie, RecommendationLog
+    from .. import rl_engine, thompson_engine
+except ImportError:
+    from database import get_db
+    from models import Movie, RecommendationLog
+    import rl_engine
+    import thompson_engine
 from pydantic import BaseModel
 from typing import Optional
-import rl_engine
-import thompson_engine
+import uuid
 
 router = APIRouter(prefix="/api/recommend", tags=["recommend"])
 
@@ -175,6 +181,20 @@ def get_recommendation(req: RecommendRequest, db: Session = Depends(get_db)):
         return {"error": "Could not select a movie"}
 
     similar = rl_engine.get_similar_movies(movies, selected, limit=4)
+    selected_row = db.query(Movie).filter(Movie.id == selected["id"]).first()
+    if selected_row:
+        selected_row.recommend_count += 1
+        db.add(RecommendationLog(
+            id=str(uuid.uuid4()),
+            movie_id=selected["id"],
+            movie_title=selected["title"],
+            input_type="recommendation",
+            input_value=(req.mood or req.genre or req.user_text or ""),
+            explanation=rl_engine.generate_explanation(selected, context, is_exploration),
+            epsilon_used=epsilon,
+            was_exploration=is_exploration,
+        ))
+        db.commit()
     
     if req.algorithm == "thompson":
         explanation = thompson_engine.generate_explanation(

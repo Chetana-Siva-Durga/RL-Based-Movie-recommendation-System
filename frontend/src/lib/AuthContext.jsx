@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
           setIsAuthenticated(false);
         }
-      } catch (error) {
+      } catch (_error) {
         setAuthError({ type: "unknown", message: "Failed to load app state" });
         setIsAuthenticated(false);
       } finally {

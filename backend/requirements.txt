@@ -7,3 +7,6 @@ matplotlib
 joblib
 python-multipart
 sqlalchemy
+pytest
+httpx
+python-dotenv

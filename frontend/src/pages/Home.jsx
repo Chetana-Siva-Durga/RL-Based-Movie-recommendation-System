@@ -68,23 +68,6 @@ export default function Home() {
       setSimilarFeedback({});
       setSessionCount(prev => prev + 1);
 
-      // Fire-and-forget: log + bump recommend_count
-      api.logs.create({
-        movie_id:       result.movie.id,
-        movie_title:    result.movie.title,
-        input_type:     inputType,
-        input_value:
-          inputType === 'mood'     ? selectedMood :
-          inputType === 'sentence' ? sentence :
-          selectedMovie?.title,
-        explanation:    result.explanation,
-        epsilon_used:   result.epsilon,
-        was_exploration: result.is_exploration,
-      });
-
-      api.movies.update(result.movie.id, {
-        recommend_count: (result.movie.recommend_count || 0) + 1,
-      });
     } finally {
       setIsRecommending(false);
     }
@@ -115,10 +98,6 @@ export default function Home() {
       algorithm:    algorithm,
     });
 
-    await api.movies.update(movie.id, {
-      reward_score: (movie.reward_score || 0) + reward,
-    });
-
     queryClient.invalidateQueries({ queryKey: ['movies'] });
     setFeedbackGiven(feedback);
     setIsSubmittingFeedback(false);
@@ -136,10 +115,6 @@ export default function Home() {
       mood_context: getMoodContext(),
       explanation:  'Feedback on similar movie',
       algorithm:    algorithm,
-    });
-
-    await api.movies.update(movie.id, {
-      reward_score: (movie.reward_score || 0) + reward,
     });
 
     queryClient.invalidateQueries({ queryKey: ['movies'] });

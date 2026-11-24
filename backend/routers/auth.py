@@ -5,7 +5,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import admin_config
+try:
+    from .. import admin_config
+except ImportError:
+    import admin_config
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -99,11 +102,9 @@ def forgot_password(req: ForgotRequest):
 
     ok = _send_otp_email(req.email, otp)
     if not ok:
-        # Surface the OTP in the response for local-dev fallback
         return {
             "success": False,
-            "message": "SMTP failed — check admin_config.py App Password. (Dev fallback)",
-            "dev_otp": otp,
+            "message": "Could not send OTP email. Configure SMTP settings and try again.",
         }
 
     return {"success": True, "message": "OTP sent to your email"}

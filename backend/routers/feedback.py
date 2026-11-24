@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from models import UserFeedback, Movie, RecommendationLog
+try:
+    from ..database import get_db
+    from ..models import UserFeedback, Movie, RecommendationLog
+except ImportError:
+    from database import get_db
+    from models import UserFeedback, Movie, RecommendationLog
 from pydantic import BaseModel
 from typing import Optional
 import uuid
@@ -31,7 +35,6 @@ def create_feedback(data: FeedbackCreate, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.id == data.movie_id).first()
     if movie:
         movie.reward_score += data.reward
-        movie.recommend_count += 1
     
     db.commit()
     db.refresh(fb)

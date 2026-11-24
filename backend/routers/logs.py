@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from models import RecommendationLog
+try:
+    from ..database import get_db
+    from ..models import RecommendationLog
+except ImportError:
+    from database import get_db
+    from models import RecommendationLog
 from pydantic import BaseModel
 from typing import Optional
 import uuid

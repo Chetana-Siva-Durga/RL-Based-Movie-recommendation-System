@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { api } from '../api/api';
 
-const BASE_URL = 'http://localhost:8000/api';
 const PAGE_SIZE = 15;
 const GENRES = ['Action', 'Drama', 'Thriller', 'Romance', 'Comedy', 'Crime', 'Fantasy', 'Family'];
 const MOODS  = ['Happy', 'Sad', 'Romantic', 'Fun', 'Thrilling', 'Inspiring', 'Intense', 'Emotional', 'Adventurous', 'Dark'];
@@ -19,35 +18,6 @@ const EMPTY_FORM = {
   title: '', genre: '', primary_mood: '', secondary_mood: '',
   year: '', director: '', lead_actor: '', imdb_rating: '',
   popularity: '5', keywords: '', description: '', poster_url: '',
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Auth API helpers
-// ─────────────────────────────────────────────────────────────────────────────
-const authApi = {
-  login: (email, password) =>
-    fetch(`${BASE_URL}/auth/login`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    }).then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.detail); return d; }),
-
-  forgotPassword: (email) =>
-    fetch(`${BASE_URL}/auth/forgot-password`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    }).then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.detail); return d; }),
-
-  verifyOTP: (email, otp) =>
-    fetch(`${BASE_URL}/auth/verify-otp`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp }),
-    }).then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.detail); return d; }),
-
-  resetPassword: (email, otp, new_password) =>
-    fetch(`${BASE_URL}/auth/reset-password`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp, new_password }),
-    }).then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.detail); return d; }),
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -101,7 +71,6 @@ function LoginGate({ onSuccess }) {
   const [showNew, setShowNew]     = useState(false);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState('');
-  const [devOtp, setDevOtp]       = useState('');  // SMTP fallback
 
   const go = async (fn) => {
     setError('');
@@ -135,7 +104,7 @@ function LoginGate({ onSuccess }) {
       {error && <ErrBubble msg={error} />}
 
       <Button onClick={() => go(async () => {
-        await authApi.login(email, password); onSuccess();
+        await api.auth.login(email, password); onSuccess();
       })} disabled={loading || !email || !password}
         className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl mt-2">
         {loading ? <Loader2 className="animate-spin w-4 h-4" /> : <><LogIn className="w-4 h-4 mr-2" />Sign In</>}
@@ -161,22 +130,15 @@ function LoginGate({ onSuccess }) {
       </Field>
 
       {error && <ErrBubble msg={error} />}
-      {devOtp && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700">
-          <strong>SMTP not configured.</strong> Dev OTP: <span className="font-mono font-bold text-lg tracking-widest ml-1">{devOtp}</span>
-        </div>
-      )}
-
       <Button onClick={() => go(async () => {
-        const res = await authApi.forgotPassword(email);
-        if (res.dev_otp) setDevOtp(res.dev_otp);
+        await api.auth.forgotPassword(email);
         setStep('otp');
       })} disabled={loading || !email}
         className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl mt-2">
         {loading ? <Loader2 className="animate-spin w-4 h-4" /> : <><Mail className="w-4 h-4 mr-2" />Send OTP</>}
       </Button>
 
-      <BackBtn onClick={() => { setStep('login'); setError(''); setDevOtp(''); }} />
+      <BackBtn onClick={() => { setStep('login'); setError(''); }} />
     </AuthCard>
   );
 
@@ -187,12 +149,6 @@ function LoginGate({ onSuccess }) {
         A 6-digit code was sent to <strong>{email}</strong>. Valid for 10 minutes.
       </p>
 
-      {devOtp && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 mb-4">
-          <strong>Dev mode OTP:</strong> <span className="font-mono font-bold text-lg tracking-widest ml-1">{devOtp}</span>
-        </div>
-      )}
-
       <Field label="6-Digit OTP" required>
         <Input value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
           type="text" maxLength="6" placeholder="_ _ _ _ _ _"
@@ -202,15 +158,14 @@ function LoginGate({ onSuccess }) {
       {error && <ErrBubble msg={error} />}
 
       <Button onClick={() => go(async () => {
-        await authApi.verifyOTP(email, otp); setStep('reset');
+        await api.auth.verifyOTP(email, otp); setStep('reset');
       })} disabled={loading || otp.length !== 6}
         className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl mt-2">
         {loading ? <Loader2 className="animate-spin w-4 h-4" /> : 'Verify OTP'}
       </Button>
 
       <button onClick={() => go(async () => {
-        const res = await authApi.forgotPassword(email);
-        if (res.dev_otp) setDevOtp(res.dev_otp);
+        await api.auth.forgotPassword(email);
         setOtp('');
       })} className="w-full text-center text-xs text-indigo-500 hover:underline mt-3 flex items-center justify-center gap-1">
         <RefreshCw className="w-3 h-3" /> Resend OTP
@@ -238,7 +193,7 @@ function LoginGate({ onSuccess }) {
       {error && <ErrBubble msg={error} />}
 
       <Button onClick={() => go(async () => {
-        await authApi.resetPassword(email, otp, newPwd); setStep('done');
+        await api.auth.resetPassword(email, otp, newPwd); setStep('done');
       })} disabled={loading || newPwd.length < 6}
         className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl mt-2">
         {loading ? <Loader2 className="animate-spin w-4 h-4" /> : 'Reset Password'}
@@ -252,7 +207,7 @@ function LoginGate({ onSuccess }) {
       <p className="text-sm text-gray-500 text-center mb-6">
         Your password has been updated. Please log in with your new credentials.
       </p>
-      <Button onClick={() => { setStep('login'); setOtp(''); setNewPwd(''); setDevOtp(''); setPassword(''); }}
+      <Button onClick={() => { setStep('login'); setOtp(''); setNewPwd(''); setPassword(''); }}
         className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl">
         <LogIn className="w-4 h-4 mr-2" /> Back to Login
       </Button>
