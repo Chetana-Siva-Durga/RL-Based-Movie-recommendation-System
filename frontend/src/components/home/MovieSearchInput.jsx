@@ -32,6 +32,22 @@ export default function MovieSearchInput({ movies, onSelect, selectedMovie }) {
     setShowDropdown(false);
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      setShowDropdown(false);
+      return;
+    }
+
+    if (event.key !== 'Enter' || !showDropdown || filtered.length === 0) return;
+
+    event.preventDefault();
+    const normalizedQuery = query.trim().toLowerCase();
+    const exactMatch = filtered.find(
+      movie => movie.title.trim().toLowerCase() === normalizedQuery
+    );
+    handleSelect(exactMatch || filtered[0]);
+  };
+
   return (
     <div ref={ref} className="relative">
       <div className="relative">
@@ -43,6 +59,7 @@ export default function MovieSearchInput({ movies, onSelect, selectedMovie }) {
             setShowDropdown(true);
             if (e.target.value === '') onSelect(null);
           }}
+          onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && setShowDropdown(true)}
           placeholder="Search for a Telugu movie..."
           className="pl-12 pr-10 h-14 text-base rounded-2xl border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300"
